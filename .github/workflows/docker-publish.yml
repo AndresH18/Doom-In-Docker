@@ -44,6 +44,8 @@ jobs:
           push: true
           tags: devopscontainerexample.azurecr.io
           file: ./Dockerfile
+          username: ${{ secrets.REGISTRY_USERNAME}}
+          password: ${{ secrets.REGISTRY_PASSWORD }}
 
   deploy:
     runs-on: ubuntu-latest
