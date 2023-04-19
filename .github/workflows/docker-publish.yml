@@ -1,0 +1,30 @@
+name: Docker Publish
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-publish:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Log in to Azure
+      uses: azure/login@v1
+      with:
+        creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+    - name: Build and push Docker image
+      uses: docker/build-push-action@v2
+      with:
+        context: .
+        push: true
+        tags: my-acr-name.azurecr.io/my-image-name:${{ github.sha }}
+        
+    - name: Update ACR image tag
+      uses: azure/cli@v1
+      with:
+        inlineScript: |
+          az acr repository update -n my-acr-name --name my-image-name --image ${GITHUB_SHA::8}=${{ github.sha }}
